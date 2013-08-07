@@ -9,14 +9,14 @@ public class player {
 	public static final double xVelLimit = 6, yVelLimit = xVelLimit;
 	
 	public double colideRadius = 10;
+	
+	public Image sprite;
 
 	public player(int startX, int startY, Image sprite){
 		this.x = startX; 
 		this.y = startY;
 		this.sprite = sprite;
 	}
-	
-	public Image sprite;
 	
 	public void tickMovement(){
 		

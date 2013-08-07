@@ -2,13 +2,20 @@ package gameDev.game;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class inputHandler implements KeyListener{
+public class inputHandler implements KeyListener, MouseListener, MouseMotionListener{
+	
+	public int mX=0,mY=0;
 	
 	public inputHandler(Game game){
 		game.addKeyListener(this);
+		game.addMouseListener(this);
+		game.addMouseMotionListener(this);
 	}
 	
 	public class Key{
@@ -36,6 +43,7 @@ public class inputHandler implements KeyListener{
 	public Key down = new Key();
 	public Key left = new Key();
 	public Key right = new Key();
+	public Key fire = new Key();
 	
 	public void keyPressed(KeyEvent e) {
 		toggleKey(e.getKeyCode(), true);
@@ -55,6 +63,47 @@ public class inputHandler implements KeyListener{
 		if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) down.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) left.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) right.toggle(isPressed);
+	}
+
+
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void mouseEntered(MouseEvent e) {
+		updateMouseXY(e);
+	}
+
+
+	public void mouseExited(MouseEvent e) {
+		updateMouseXY(e);
+	}
+
+
+	public void mousePressed(MouseEvent e) {
+		updateMouseXY(e);
+		fire.toggle(true);
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		updateMouseXY(e);
+		fire.toggle(false);
+	}
+	
+	private void updateMouseXY(MouseEvent e) {
+		mX = e.getX()/Game.SCALE;
+		mY = e.getY()/Game.SCALE;
+	}
+
+
+	public void mouseDragged(MouseEvent e) {
+		updateMouseXY(e);
+	}
+
+	public void mouseMoved(MouseEvent e) {
+		updateMouseXY(e);
 	}
 
 }

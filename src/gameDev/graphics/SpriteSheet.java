@@ -14,8 +14,6 @@ public class SpriteSheet {
 	public int tileSize;
 	public BufferedImage sheetImage; 
 	
-	//public int[] pixels;
-	
 	public SpriteSheet(String path, int tileSize){
 		BufferedImage image = null;
 		
@@ -36,15 +34,12 @@ public class SpriteSheet {
 		this.tileSize = tileSize;
 		this.sheetImage = image;
 		
-		/*pixels = image.getRGB(0, 0, width, height, null, 0, width);
-		
-		for (int i=0; i < pixels.length; i++){
-			pixels[i] = (pixels[i] & 0xff)/64;
-		}*/
 	}
 	
-	public Image getSprite( int xTile, int yTile ){
-		return sheetImage.getSubimage(xTile * tileSize, yTile * tileSize, tileSize, tileSize);
+	public Image getSprite( int xTile, int yTile , boolean flipX, boolean flipY){
+		Image sprite = sheetImage.getSubimage(xTile * tileSize, yTile * tileSize, tileSize, tileSize);
+		//if (flipX) sprite.scale(-1,-1); 
+		return sprite;
 	}
 
 }

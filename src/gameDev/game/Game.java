@@ -7,7 +7,8 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.Image;
+//import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -18,7 +19,7 @@ public class Game extends Canvas implements Runnable{
 	private static final long serialVersionUID = 1L;
 
 	public static final int WIDTH = 480;
-	public static final int HEIGHT = WIDTH / 12 * 9;
+	public static final int HEIGHT = WIDTH / 16 * 9;
 	public static final int SCALE = 2;
 	public static final String NAME = "Test Game";
 	
@@ -33,6 +34,8 @@ public class Game extends Canvas implements Runnable{
 	//private Screen screen;
 	public inputHandler input;
 	public player dude;
+	public projectile laser;
+	Image lasersprite,crosshair;
 	
 	public Game(){
 		setMinimumSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
@@ -56,7 +59,9 @@ public class Game extends Canvas implements Runnable{
 		//screen = new Screen(WIDTH,HEIGHT, new SpriteSheet("/sprite1.png",32));
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
 		input = new inputHandler(this);
-		dude = new player(100,100,playerSprites.getSprite(0,0));
+		dude = new player(100,100,playerSprites.getSprite(0,0,false,false));
+		lasersprite = playerSprites.getSprite(1, 1, false, false);
+		crosshair = playerSprites.getSprite(0, 1, false, false);
 	}
 	
 	private synchronized void start() {
@@ -64,6 +69,7 @@ public class Game extends Canvas implements Runnable{
 		new Thread(this).start();	
 	}
 	
+	@SuppressWarnings("unused")
 	private synchronized void stop() {
 		
 	}
@@ -109,7 +115,7 @@ public class Game extends Canvas implements Runnable{
 			if ((System.currentTimeMillis() - lastTimer) >= 1000){
 				lastTimer += 1000;
 				System.out.println("FramesPerSec: "+frames+"     TicksPerSec: "+ticks);
-				//System.out.println("X:"+dude.x+" Y:"+dude.y);
+				//System.out.println("X:"+laser.x+" Y:"+laser.y);
 				frames = 0;
 				ticks= 0;
 			}
@@ -130,6 +136,32 @@ public class Game extends Canvas implements Runnable{
 		
 		dude.tickMovement();
 		
+		if(input.fire.isPressed() && laser == null){
+			double relativeAngle;
+			
+			if(input.mX == dude.x){
+				if(input.mY >= dude.y){
+					relativeAngle = Math.PI/2;
+				}
+				else{
+					relativeAngle = 3*Math.PI/2;
+				}
+			}
+			else{
+				relativeAngle = Math.tan( (double)((input.mY - dude.y)/(input.mX - dude.x)) );
+			}
+			
+			
+			laser = new projectile(dude.x,dude.y, relativeAngle , 10 ,lasersprite);
+		}
+		
+		if(laser!=null){
+			laser.tickMovement();
+			if (laser.x < 0 || laser.y < 0 ||  laser.x >= WIDTH || laser.y >= HEIGHT){
+				laser = null;
+			}
+		}
+		
 	}
 	
 	public void render(){
@@ -140,34 +172,22 @@ public class Game extends Canvas implements Runnable{
 		}
 		
 		
-		/*for (int y=0; y<32; y++){
-			for (int x=0; x<32; x++){
-				screen.render(x<<3,y<<3, 0, Colours.get(555, 500, 050, 005));
-			}
-		}
-		
-		for (int y=0; y<screen.height; y++){		
-			for (int x=0; x<screen.width; x++){
-				int colourCode = screen.pixels[x+y*screen.width];
-				if(colourCode < 255) pixels[x + y * WIDTH] = colours[colourCode];
-			}
-		}	*/
-		
-		//image = screen.render();
-		
 		Graphics r = image.createGraphics();
 		
 		r.setColor(Color.WHITE);
 		r.fillRect(0, 0, getWidth(), getHeight());
 		
-		r.drawImage(dude.sprite, (int)dude.x - 10, (int)dude.y - 10, 20, 20, null);
+		r.drawImage(dude.sprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
+		
+		r.drawImage(crosshair, input.mX - 16, input.mY - 16, 32, 32, null);
+		
+		if(laser != null) r.drawImage(laser.sprite, (int)laser.x - 16, (int)laser.y - 16, 32, 32, null);
 		
 		Graphics g = bs.getDrawGraphics();
 		
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
-		//g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		
 		g.dispose();
