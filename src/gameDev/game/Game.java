@@ -30,12 +30,13 @@ public class Game extends Canvas implements Runnable{
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	//private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+	private boolean shooting = false;
 	
 	//private Screen screen;
 	public inputHandler input;
 	public player dude;
 	public projectile laser;
-	Image lasersprite,crosshair;
+	Image lasersprite,crosshair,shootsprite;
 	
 	public Game(){
 		setMinimumSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
@@ -62,6 +63,7 @@ public class Game extends Canvas implements Runnable{
 		dude = new player(100,100,playerSprites.getSprite(0,0,false,false));
 		lasersprite = playerSprites.getSprite(1, 1, false, false);
 		crosshair = playerSprites.getSprite(0, 1, false, false);
+		shootsprite = playerSprites.getSprite(1,0,false,false);
 	}
 	
 	private synchronized void start() {
@@ -115,7 +117,7 @@ public class Game extends Canvas implements Runnable{
 			if ((System.currentTimeMillis() - lastTimer) >= 1000){
 				lastTimer += 1000;
 				System.out.println("FramesPerSec: "+frames+"     TicksPerSec: "+ticks);
-				//System.out.println("X:"+laser.x+" Y:"+laser.y);
+				//System.out.println(""+);
 				frames = 0;
 				ticks= 0;
 			}
@@ -137,10 +139,13 @@ public class Game extends Canvas implements Runnable{
 		dude.tickMovement();
 		
 		if(input.fire.isPressed() && laser == null){
+			
 			double relativeAngle;
 			
-			if(input.mX == dude.x){
-				if(input.mY >= dude.y){
+			double diffY = (input.mY - dude.y) , diffX = (input.mX - dude.x);
+			
+			if(diffX == 0){
+				if(diffY >= 0){
 					relativeAngle = Math.PI/2;
 				}
 				else{
@@ -148,17 +153,19 @@ public class Game extends Canvas implements Runnable{
 				}
 			}
 			else{
-				relativeAngle = Math.tan( (double)((input.mY - dude.y)/(input.mX - dude.x)) );
+				relativeAngle = Math.atan( diffY/diffX );
+				if(diffX < 0) relativeAngle += (Math.PI);
 			}
 			
-			
 			laser = new projectile(dude.x,dude.y, relativeAngle , 10 ,lasersprite);
+			shooting = true;
 		}
 		
 		if(laser!=null){
 			laser.tickMovement();
 			if (laser.x < 0 || laser.y < 0 ||  laser.x >= WIDTH || laser.y >= HEIGHT){
 				laser = null;
+				shooting = false;
 			}
 		}
 		
@@ -177,8 +184,12 @@ public class Game extends Canvas implements Runnable{
 		r.setColor(Color.WHITE);
 		r.fillRect(0, 0, getWidth(), getHeight());
 		
-		r.drawImage(dude.sprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
-		
+		if(shooting){
+			r.drawImage(shootsprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
+		}
+		else{
+			r.drawImage(dude.sprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
+		}
 		r.drawImage(crosshair, input.mX - 16, input.mY - 16, 32, 32, null);
 		
 		if(laser != null) r.drawImage(laser.sprite, (int)laser.x - 16, (int)laser.y - 16, 32, 32, null);

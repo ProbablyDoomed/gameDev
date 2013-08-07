@@ -10,12 +10,13 @@ public class player {
 	
 	public double colideRadius = 10;
 	
-	public Image sprite;
+	public Image sprite,shootsprite;
 
 	public player(int startX, int startY, Image sprite){
 		this.x = startX; 
 		this.y = startY;
 		this.sprite = sprite;
+		
 	}
 	
 	public void tickMovement(){
