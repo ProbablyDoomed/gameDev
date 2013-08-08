@@ -193,7 +193,7 @@ public class Game extends Canvas implements Runnable{
 		r.setColor(Color.WHITE);
 		r.fillRect(0, 0, getWidth(), getHeight());
 		
-		if(input.fire.isPressed()){
+		if(shooting){
 			r.drawImage(shootsprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
 		}
 		else{
