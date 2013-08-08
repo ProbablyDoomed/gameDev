@@ -202,7 +202,7 @@ public class Game extends Canvas implements Runnable{
 		r.drawImage(crosshair, input.mX - 16, input.mY - 16, 32, 32, null);
 		
 		for(int i=0; i<lasers.size(); i++){
-			if(lasers.get(i) != null) r.drawImage(lasersprite, (int)lasers.get(i).x - 8, (int)lasers.get(i).y - 8, 16, 16, null);
+			if(lasers.get(i) != null) r.drawImage(lasersprite, (int)lasers.get(i).x - 10, (int)lasers.get(i).y - 10, 20, 20, null);
 		}
 		
 		Graphics g = bs.getDrawGraphics();
