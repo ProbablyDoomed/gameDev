@@ -9,7 +9,7 @@ public class level {
 	public int width,height;
 	
 	public level( int levelNum ){
-		buildLevel(0);
+		buildLevel(levelNum);
 	}
 	
 	private void buildLevel( int levelNum ){
@@ -19,6 +19,11 @@ public class level {
 		walls.add(new wall(0,0,0,height,  0));
 		walls.add(new wall(width,0,width,height,  0));
 		walls.add(new wall(0,height,width,height,  0));
+		
+		//walls.add(new wall(50,50,50,75,0));
+		//walls.add(new wall(50,50,75,50,0));
+		//walls.add(new wall(75,50,50,75,0));
+
 		
 	}
 }

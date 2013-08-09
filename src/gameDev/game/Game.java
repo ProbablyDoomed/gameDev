@@ -1,6 +1,8 @@
 package gameDev.game;
 
 import gameDev.graphics.SpriteSheet;
+import gameDev.graphics.sprite3d;
+import gameDev.graphics.wallTexture;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
@@ -20,9 +22,9 @@ public class Game extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 480;
+	public static final int WIDTH = 360;
 	public static final int HEIGHT = WIDTH / 16 * 10;
-	public static final int SCALE = 3;
+	public static final int SCALE = 2;
 	
 	public static final double FOV = 30*Math.PI/180;
 	
@@ -34,15 +36,26 @@ public class Game extends Canvas implements Runnable{
 	public int tickCount = 0;
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-	//private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-	boolean shooting = false;
+	public List<sprite3d> draw3dList = new ArrayList<sprite3d>();
+	public static final double rayStep = 0.2;
+	public static final int maxDrawDist = 1000;
+	public static final double wallMargin = 0.2;
 	
-	//private Screen screen;
+	
 	public inputHandler input;
 	public player dude;
-	//public projectile laser;
+	
+	public level world = new level(0);
+	public wallTexture greystone = new wallTexture("/wolfen/greystone.png");
+	public wallTexture eagle = new wallTexture("/wolfen/eagle.png");
+	public wallTexture pinkgrid = new wallTexture("/sprite1.png");
+
 	public List<projectile> lasers = new ArrayList<projectile>();
+	
+	
 	Image lasersprite,crosshair,shootsprite;
+	boolean shooting = false;
+	
 	
 	public Game(){
 		setMinimumSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
@@ -63,10 +76,9 @@ public class Game extends Canvas implements Runnable{
 	
 	public void init(){
 			
-		//screen = new Screen(WIDTH,HEIGHT, new SpriteSheet("/sprite1.png",32));
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
 		input = new inputHandler(this);
-		dude = new player(100,100,0,playerSprites.getSprite(0,0,false,false));
+		dude = new player(100,100,0);
 		lasersprite = playerSprites.getSprite(1, 1, false, false);
 		crosshair = playerSprites.getSprite(0, 1, false, false);
 		shootsprite = playerSprites.getSprite(1,0,false,false);
@@ -134,15 +146,22 @@ public class Game extends Canvas implements Runnable{
 	public void tick() {
 		tickCount++;
 		
-		if(input.up.isPressed()) dude.accel(0, -3);
-		else if(input.down.isPressed()) dude.accel(0, 3);
-		else dude.applyFriction(1, 0.33);
+		if(input.up.isPressed()) dude.accel(dude.heading);
+		else if(input.down.isPressed()) dude.accel(dude.heading + Math.PI);
 		
-		if(input.left.isPressed()) dude.accel(-3, 0);
-		else if(input.right.isPressed()) dude.accel(3, 0);
-		else dude.applyFriction(0.33, 1);
+		
+		if(input.strafe.isPressed()){
+			if(input.left.isPressed()) dude.accel(dude.heading - Math.PI/2);
+			else if(input.right.isPressed()) dude.accel(dude.heading + Math.PI/2);
+		}
+		else{
+			if(input.left.isPressed()) dude.turn(-1);
+			if(input.right.isPressed()) dude.turn(1);
+		}
+
 		
 		dude.tickMovement();
+		dude.applyFriction();
 		//lasers.trimToSize();
 		if(input.fire.isPressed() && lasers.size() < 12){
 			
@@ -175,7 +194,7 @@ public class Game extends Canvas implements Runnable{
 		for(int i=0; i<lasers.size(); i++){
 			if( lasers.get(i) != null ){
 				lasers.get(i).tickMovement();
-				if (lasers.get(i).x < 0 || lasers.get(i).y < 0 ||  lasers.get(i).x >= WIDTH || lasers.get(i).y >= HEIGHT){
+				if (lasers.get(i).x < 0 || lasers.get(i).y < 0 ||  lasers.get(i).x >= world.width || lasers.get(i).y >= world.height){
 					lasers.remove(i);
 				}
 			}
@@ -193,22 +212,58 @@ public class Game extends Canvas implements Runnable{
 		
 		Graphics r = image.createGraphics();
 		
-		r.setColor(Color.WHITE);
-		r.fillRect(0, 0, getWidth(), getHeight());
+		r.setColor(Color.GRAY);
+		r.fillRect(0, 0, WIDTH, HEIGHT/2);
+		r.setColor(Color.darkGray);
+		r.fillRect(0, HEIGHT/2, WIDTH, HEIGHT/2);
 		
-		/*if(shooting){
-			r.drawImage(shootsprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
+		for(int ray = 0; ray < WIDTH; ray++){
+			
+			int steps = 0;
+			boolean foundWall = false;
+			int wallTextureIndex = 0;
+			double xRay,yRay;
+			
+			double angle = dude.heading - Game.FOV + (ray * 2 * Game.FOV/Game.WIDTH);
+			double xStep = rayStep * Math.cos(angle);
+			double yStep = rayStep * Math.sin(angle);
+			
+			while( steps*rayStep <= maxDrawDist && foundWall == false){
+				
+				steps++;
+				xRay = dude.x + xStep * steps;
+				yRay = dude.y + yStep * steps;
+				
+				for(int w = 0; w < world.walls.size(); w++){ //for each wall in level
+					if( world.walls.get(w).testIntersection(xRay, yRay, wallMargin) ){
+						wallTextureIndex = world.walls.get(w).getTextureColumn(xRay, yRay);
+						foundWall = true;
+						break;
+					}
+				}
+				
+			}
+			
+			if(foundWall){
+				draw3dList.add(new sprite3d(ray, steps*rayStep, dude.heading, true, 
+						greystone.segment[wallTextureIndex]));
+			}
+			
 		}
-		else{
-			r.drawImage(dude.sprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
+		
+		for(int i=0; i < draw3dList.size(); i++){
+			r.drawImage(draw3dList.get(i).sprite,
+					(int)(draw3dList.get(i).screenX - (draw3dList.get(i).drawWidth/2)) ,
+					(int)((Game.HEIGHT - draw3dList.get(i).drawHeight) /2 ) ,
+					draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight, null );
+			
+			/*r.fillRect((int)(draw3dList.get(i).screenX - (draw3dList.get(i).drawWidth/2)) ,
+					(int)((Game.HEIGHT - draw3dList.get(i).drawHeight) /2 ) ,
+					draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight);*/
+			
 		}
-		r.drawImage(crosshair, input.mX - 16, input.mY - 16, 32, 32, null);
 		
-		for(int i=0; i<lasers.size(); i++){
-			if(lasers.get(i) != null) r.drawImage(lasersprite, (int)lasers.get(i).x - 10, (int)lasers.get(i).y - 10, 20, 20, null);
-		}*/
-		
-		
+		draw3dList.clear();
 		
 		Graphics g = bs.getDrawGraphics();
 		

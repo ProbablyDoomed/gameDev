@@ -1,25 +1,37 @@
 package gameDev.game;
 
-import java.awt.Image;
 
 public class player {
 	
 	public double x,y;
 	public double xVel=0 , yVel=0;
-	public static final double xVelLimit = 6, yVelLimit = xVelLimit;
+	public static final double xVelLimit = 0.5, yVelLimit = xVelLimit;
+	public static final double acceleration = 6;
+	public static final double friction = 0.6;
 	
 	public double heading;
+	public static final double turnRate = 0.03;
 	
 	public double colideRadius = 10;
 	
-	public Image sprite,shootsprite;
-
-	public player(int startX, int startY, double startFacing, Image sprite){
+	public player(int startX, int startY, double startFacing){
 		this.x = startX; 
 		this.y = startY;
-		this.sprite = sprite;
-		this.heading = startFacing;
-		
+		this.heading = startFacing;	
+	}
+	
+	public void accel( double dir ){
+		xVel += acceleration * Math.cos(dir);
+		yVel += acceleration * Math.sin(dir);
+	}
+	
+	public void applyFriction() {
+			xVel *= friction;
+			yVel *= friction;
+	}
+	
+	public void turn(double scale){
+		heading += scale*turnRate;
 	}
 	
 	public void tickMovement(){
@@ -28,7 +40,7 @@ public class player {
 		
 	}
 	
-	public void accel( double xRate, double yRate ){
+	public void accel2d( double xRate, double yRate ){
 		
 		double xVelNew =  xVel + xRate;
 		double yVelNew =  yVel + yRate;
@@ -53,8 +65,10 @@ public class player {
 			yVel = yVelNew;
 		}
 	}
+	
 
-	public void applyFriction( double xRate, double yRate ) {
+
+	public void applyFriction2d( double xRate, double yRate ) {
 		//boolean xDir, yDir;
 			xVel *= xRate;
 			yVel *= yRate;

@@ -6,13 +6,13 @@ import java.awt.Image;
 
 public class sprite3d {//for wall segments and objects in the game world
 
-	double screenX;
-	int drawHeight,drawWidth;
-	double dist;
+	public double screenX;
+	public int drawHeight,drawWidth;
+	public double dist;
 	double angleDiff;
-	boolean isWall,visible;
+	public boolean isWall,visible;
 	
-	Image sprite;
+	public Image sprite;
 	
 	public sprite3d(int screenX, double dist,double cHead, boolean wall, Image sprite){
 		//constructor taking screen pixel column and distance;
@@ -24,7 +24,8 @@ public class sprite3d {//for wall segments and objects in the game world
 		this.sprite = sprite;
 		//this.cameraHeading = cHead;
 		
-		this.angleDiff = cHead - Game.FOV + (screenX * 2 * Game.FOV/Game.WIDTH);
+		this.angleDiff = 0 - Game.FOV + (screenX * 2 * Game.FOV/Game.WIDTH);
+		
 		this.drawHeight = (int)(64*Game.WIDTH/(2*Math.tan(Game.FOV)*(dist * Math.cos(angleDiff))));
 		
 		if(wall){

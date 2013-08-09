@@ -2,10 +2,11 @@ package gameDev.game;
 
 public class wall { //wall from (x1,y1) to (x2,y2)
 	
-	double x1,y1,x2,y2;
-	int texture;
-	
+	double x1,y1,x2,y2;	
 	double m,c; // y = m*x + c definition of wall line
+	boolean vertical;
+	
+	int texture;
 	
 	public wall(double x1,double y1,double x2,double y2, int texture){
 		
@@ -14,42 +15,57 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		this.x2 = x2;
 		this.y2 = y2;
 		
-		this.m = (y2-y1)/(x2-y2);
-		this.c = y1 - (m*x1);
+		if(x1==x2){
+			this.vertical = true;
+		}
+		else{
+			this.m = (y2-y1)/(x2-x1);
+			this.c = y1 - (m*x1);
+			this.vertical = false;
+		}
 		
 		this.texture = texture;
+		
 	}
 	
-	public double[] getIntersection(){
+	public double[] getIntersection(double x, double y, double angle){
 		
 		double result[] = new double[2];
 		
 		return result;
 	}
 	
-	public boolean testIntersection(double x, double y){
-		
-		double lowX,lowY,highX,highY;
-		
-		if(x1>x2){
-			lowX = x2; highX = x1;
+	public boolean testIntersection(double x, double y, double margin){
+				
+		if(vertical){
+			
+			double lowY,highY;
+			
+			if(y1>y2){
+				lowY = y2; highY = y1;
+			}
+			else{
+				lowY = y1; highY = y2;
+			}
+			
+			if(x >= x1 - margin && x <= x1 + margin && y >= lowY - margin && y <= highY + margin){
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+			
 		}
+		
 		else{
-			lowX = x1; highX = x2;
-		}
-		
-		if(y1>y2){
-			lowY = y2; highY = y1;
-		}
-		else{
-			lowY = y1; highY = y2;
-		}
-		
-		if(x >= lowX && x <= highX && y >= lowY && y <= highY){
-			return true;
-		}
-		else{
-			return false;
+			if(y >= m*x + c - margin && y <= m*x + c + margin){
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 	
