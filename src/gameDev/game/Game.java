@@ -24,7 +24,7 @@ public class Game extends Canvas implements Runnable{
 
 	public static final int WIDTH = 360;
 	public static final int HEIGHT = WIDTH / 16 * 10;
-	public static final int SCALE = 2;
+	public static final int SCALE = 4;
 	
 	public static final double FOV = 30*Math.PI/180;
 	
@@ -37,9 +37,9 @@ public class Game extends Canvas implements Runnable{
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	public List<sprite3d> draw3dList = new ArrayList<sprite3d>();
-	public static final double rayStep = 0.2;
+	public static final double rayStep = 0.5;
 	public static final int maxDrawDist = 1000;
-	public static final double wallMargin = 0.2;
+	public static final double wallMargin = 0.5;
 	
 	
 	public inputHandler input;
@@ -78,7 +78,7 @@ public class Game extends Canvas implements Runnable{
 			
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
 		input = new inputHandler(this);
-		dude = new player(100,100,0);
+		dude = new player(250,250,0);
 		lasersprite = playerSprites.getSprite(1, 1, false, false);
 		crosshair = playerSprites.getSprite(0, 1, false, false);
 		shootsprite = playerSprites.getSprite(1,0,false,false);
@@ -160,7 +160,7 @@ public class Game extends Canvas implements Runnable{
 		}
 
 		
-		dude.tickMovement();
+		dude.tickMovement( world );
 		dude.applyFriction();
 		//lasers.trimToSize();
 		if(input.fire.isPressed() && lasers.size() < 12){

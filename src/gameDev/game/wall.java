@@ -36,37 +36,61 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 	}
 	
 	public boolean testIntersection(double x, double y, double margin){
-				
-		if(vertical){
-			
-			double lowY,highY;
-			
-			if(y1>y2){
-				lowY = y2; highY = y1;
-			}
-			else{
-				lowY = y1; highY = y2;
-			}
-			
-			if(x >= x1 - margin && x <= x1 + margin && y >= lowY - margin && y <= highY + margin){
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-			
+		
+		double lowX,highX;
+		double lowY,highY;
+		if(x1>x2){
+			lowX = x2; highX = x1;
+		}
+		else{
+			lowX = x1; highX = x2;
+		}
+		if(y1>y2){
+			lowY = y2; highY = y1;
+		}
+		else{
+			lowY = y1; highY = y2;
 		}
 		
-		else{
-			if(y >= m*x + c - margin && y <= m*x + c + margin){
-				return true;
+		
+		if( x >= lowX - margin && x <= highX + margin && y >= lowY - margin && y <= highY + margin){
+			if(vertical){		
+
+				if(x >= x1 - margin && x <= x1 + margin  ){
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+				
 			}
-			else
-			{
-				return false;
+			
+			else if(m == 0){
+					
+				if(y >= y1 - margin && y <= y1 + margin){
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}	
+			
+			else{
+				if(y >= m*x + c - margin && y <= m*x + c + margin){
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 		}
+		else{
+			return false;
+		}		
+		
 	}
 	
 	public int getTextureColumn(double x, double y){

@@ -6,13 +6,14 @@ public class player {
 	public double x,y;
 	public double xVel=0 , yVel=0;
 	public static final double xVelLimit = 0.5, yVelLimit = xVelLimit;
-	public static final double acceleration = 6;
-	public static final double friction = 0.6;
+	public static final int moveRes = 10;
+	public static final double acceleration = 5;
+	public static final double friction = 0.3;
 	
 	public double heading;
 	public static final double turnRate = 0.03;
 	
-	public double colideRadius = 10;
+	public double collideRadius = 30;
 	
 	public player(int startX, int startY, double startFacing){
 		this.x = startX; 
@@ -34,44 +35,47 @@ public class player {
 		heading += scale*turnRate;
 	}
 	
-	public void tickMovement(){
-		
-		x += xVel; y += yVel;
+	public void tickMovement( level world ){
+		for (int i=0; i<moveRes; i++){
+			double xNew = x + xVel/moveRes;
+			double yNew = y + yVel/moveRes;
+			
+			boolean xCollide = false;
+			boolean yCollide = false;
+			
+			for(int w = 0; w < world.walls.size(); w++){ //for each wall in level
+				if( world.walls.get(w).testIntersection(xNew, y, collideRadius)){
+					xCollide = true;
+				}
+				if( world.walls.get(w).testIntersection(x, yNew, collideRadius)){
+					yCollide = true;
+				}
+			}
+			if(xCollide) {
+				//xVel = 0;
+	/*			if (x > xNew){
+					x = xNew + collideRadius;
+				}
+				else{
+					x = xNew - collideRadius;
+				}*/
+			}
+			else x = xNew;
+			
+			if(yCollide) {
+				//yVel = 0; 
+	/*			if (y > yNew){
+					y = yNew + collideRadius;
+				}
+				else{
+					y = yNew - collideRadius;
+				}*/
+			}
+			else y = yNew;
+		}
 		
 	}
 	
-	public void accel2d( double xRate, double yRate ){
-		
-		double xVelNew =  xVel + xRate;
-		double yVelNew =  yVel + yRate;
-		
-		if(xVelNew < -xVelLimit){
-			xVel = -xVelLimit;
-		}
-		else if( xVelNew > xVelLimit){
-			xVel = xVelLimit;
-		}
-		else{
-			xVel = xVelNew;
-		}
-		
-		if(yVelNew < -yVelLimit){
-			yVel = -yVelLimit;
-		}
-		else if(yVelNew > yVelLimit){
-			yVel = yVelLimit;
-		}
-		else{
-			yVel = yVelNew;
-		}
-	}
-	
 
-
-	public void applyFriction2d( double xRate, double yRate ) {
-		//boolean xDir, yDir;
-			xVel *= xRate;
-			yVel *= yRate;
-	}
 	
 }

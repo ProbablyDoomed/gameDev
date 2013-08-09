@@ -20,9 +20,9 @@ public class level {
 		walls.add(new wall(width,0,width,height,  0));
 		walls.add(new wall(0,height,width,height,  0));
 		
-		//walls.add(new wall(50,50,50,75,0));
-		//walls.add(new wall(50,50,75,50,0));
-		//walls.add(new wall(75,50,50,75,0));
+		walls.add(new wall(50,50,50,75,0));
+		walls.add(new wall(50,50,75,50,0));
+		walls.add(new wall(75,50,50,75,0));
 
 		
 	}
