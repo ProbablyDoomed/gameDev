@@ -21,8 +21,11 @@ public class Game extends Canvas implements Runnable{
 	private static final long serialVersionUID = 1L;
 
 	public static final int WIDTH = 480;
-	public static final int HEIGHT = WIDTH / 16 * 9;
+	public static final int HEIGHT = WIDTH / 16 * 10;
 	public static final int SCALE = 3;
+	
+	public static final double FOV = 30*Math.PI/180;
+	
 	public static final String NAME = "Test Game";
 	
 	private JFrame frame;
@@ -37,7 +40,7 @@ public class Game extends Canvas implements Runnable{
 	//private Screen screen;
 	public inputHandler input;
 	public player dude;
-	public projectile laser;
+	//public projectile laser;
 	public List<projectile> lasers = new ArrayList<projectile>();
 	Image lasersprite,crosshair,shootsprite;
 	
@@ -63,7 +66,7 @@ public class Game extends Canvas implements Runnable{
 		//screen = new Screen(WIDTH,HEIGHT, new SpriteSheet("/sprite1.png",32));
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
 		input = new inputHandler(this);
-		dude = new player(100,100,playerSprites.getSprite(0,0,false,false));
+		dude = new player(100,100,0,playerSprites.getSprite(0,0,false,false));
 		lasersprite = playerSprites.getSprite(1, 1, false, false);
 		crosshair = playerSprites.getSprite(0, 1, false, false);
 		shootsprite = playerSprites.getSprite(1,0,false,false);
@@ -193,7 +196,7 @@ public class Game extends Canvas implements Runnable{
 		r.setColor(Color.WHITE);
 		r.fillRect(0, 0, getWidth(), getHeight());
 		
-		if(shooting){
+		/*if(shooting){
 			r.drawImage(shootsprite, (int)dude.x - 16, (int)dude.y - 16, 32, 32, null);
 		}
 		else{
@@ -203,7 +206,9 @@ public class Game extends Canvas implements Runnable{
 		
 		for(int i=0; i<lasers.size(); i++){
 			if(lasers.get(i) != null) r.drawImage(lasersprite, (int)lasers.get(i).x - 10, (int)lasers.get(i).y - 10, 20, 20, null);
-		}
+		}*/
+		
+		
 		
 		Graphics g = bs.getDrawGraphics();
 		
@@ -213,7 +218,7 @@ public class Game extends Canvas implements Runnable{
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		
 		g.dispose();
-		//r.dispose();
+		r.dispose();
 		bs.show();
 	}
 	

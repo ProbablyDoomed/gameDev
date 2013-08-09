@@ -8,14 +8,17 @@ public class player {
 	public double xVel=0 , yVel=0;
 	public static final double xVelLimit = 6, yVelLimit = xVelLimit;
 	
+	public double heading;
+	
 	public double colideRadius = 10;
 	
 	public Image sprite,shootsprite;
 
-	public player(int startX, int startY, Image sprite){
+	public player(int startX, int startY, double startFacing, Image sprite){
 		this.x = startX; 
 		this.y = startY;
 		this.sprite = sprite;
+		this.heading = startFacing;
 		
 	}
 	
