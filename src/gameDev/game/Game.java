@@ -246,7 +246,7 @@ public class Game extends Canvas implements Runnable{
 			
 			if(foundWall){
 				draw3dList.add(new sprite3d(ray, steps*rayStep, dude.heading, true, 
-						greystone.segment[wallTextureIndex]));
+						eagle.segment[wallTextureIndex]));
 			}
 			
 		}
