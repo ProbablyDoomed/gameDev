@@ -10,10 +10,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-//import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -22,11 +23,11 @@ public class Game extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 360;
+	public static final int WIDTH = 320;
 	public static final int HEIGHT = WIDTH / 16 * 10;
 	public static final int SCALE = 4;
 	
-	public static final double FOV = 30*Math.PI/180;
+	public static final double FOV = 25*Math.PI/180;
 	
 	public static final String NAME = "Test Game";
 	
@@ -37,23 +38,25 @@ public class Game extends Canvas implements Runnable{
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	public List<sprite3d> draw3dList = new ArrayList<sprite3d>();
-	public static final double rayStep = 0.5;
-	public static final int maxDrawDist = 1000;
-	public static final double wallMargin = 0.5;
+	public static final double rayStep = 1;
+	public static final int maxDrawDist = 2000;
+	public static final double wallMargin = 1;
 	
 	
 	public inputHandler input;
 	public player dude;
 	
 	public level world = new level(0);
-	public wallTexture greystone = new wallTexture("/wolfen/greystone.png");
-	public wallTexture eagle = new wallTexture("/wolfen/eagle.png");
-	public wallTexture pinkgrid = new wallTexture("/sprite1.png");
+	public wallTexture[] wallTextures = {
+			new wallTexture("/wolfen/redbrick.png"),
+			new wallTexture("/wolfen/greystone.png"),
+			new wallTexture("/wolfen/wood.png")
+	};
 
 	public List<projectile> lasers = new ArrayList<projectile>();
 	
 	
-	Image lasersprite,crosshair,shootsprite;
+	Image lasersprite,crosshair,shootsprite,logo;
 	boolean shooting = false;
 	
 	
@@ -74,14 +77,22 @@ public class Game extends Canvas implements Runnable{
 		frame.setVisible(true);
 	}
 	
+	public class distComparator implements Comparator<sprite3d>{ //order by farthest away to closest for drawing
+		public int compare(sprite3d s1, sprite3d s2) {
+			return  ((int)s2.dist - (int)s1.dist);
+		}	
+	}
+	
 	public void init(){
 			
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
+		SpriteSheet logoSheet = new SpriteSheet("/drinksplusplus.png",64);
 		input = new inputHandler(this);
 		dude = new player(250,250,0);
-		lasersprite = playerSprites.getSprite(1, 1, false, false);
-		crosshair = playerSprites.getSprite(0, 1, false, false);
-		shootsprite = playerSprites.getSprite(1,0,false,false);
+		lasersprite = playerSprites.sprite[1][1];
+		crosshair = playerSprites.sprite[0][1];
+		shootsprite = playerSprites.sprite[1][0];
+		logo = logoSheet.sprite[0][0];
 	}
 	
 	private synchronized void start() {
@@ -93,6 +104,8 @@ public class Game extends Canvas implements Runnable{
 	private synchronized void stop() {
 		
 	}
+	
+
 	
 	public void run() {
 		
@@ -163,29 +176,12 @@ public class Game extends Canvas implements Runnable{
 		dude.tickMovement( world );
 		dude.applyFriction();
 		//lasers.trimToSize();
-		if(input.fire.isPressed() && lasers.size() < 12){
-			
-			double relativeAngle;
-			
-			double diffY = (input.mY - dude.y) , diffX = (input.mX - dude.x);
-			
-			if(diffX == 0){
-				if(diffY >= 0){
-					relativeAngle = Math.PI/2;
-				}
-				else{
-					relativeAngle = 3*Math.PI/2;
-				}
-			}
-			else{
-				relativeAngle = Math.atan( diffY/diffX );
-				if(diffX < 0) relativeAngle += (Math.PI);
-			}
-			
+		if(input.fire.isPressed() && lasers.size() < 4){
+						
 			shooting = true;
 			
-			lasers.add(new projectile(dude.x,dude.y, relativeAngle , 8 ,lasersprite));
-			lasers.add(new projectile(dude.x - 8,dude.y, relativeAngle , 8 ,lasersprite));
+			lasers.add(new projectile(dude.x,dude.y, dude.heading , 16 ,lasersprite));
+			
 		}
 		else{
 			shooting = false;
@@ -194,7 +190,8 @@ public class Game extends Canvas implements Runnable{
 		for(int i=0; i<lasers.size(); i++){
 			if( lasers.get(i) != null ){
 				lasers.get(i).tickMovement();
-				if (lasers.get(i).x < 0 || lasers.get(i).y < 0 ||  lasers.get(i).x >= world.width || lasers.get(i).y >= world.height){
+				if (lasers.get(i).x < 0 || lasers.get(i).y < 0 
+					||  lasers.get(i).x >= world.width || lasers.get(i).y >= world.height){
 					lasers.remove(i);
 				}
 			}
@@ -221,7 +218,8 @@ public class Game extends Canvas implements Runnable{
 			
 			int steps = 0;
 			boolean foundWall = false;
-			int wallTextureIndex = 0;
+			int wallTexture = 0;
+			int wallTextureSegment = 0;
 			double xRay,yRay;
 			
 			double angle = dude.heading - Game.FOV + (ray * 2 * Game.FOV/Game.WIDTH);
@@ -236,8 +234,9 @@ public class Game extends Canvas implements Runnable{
 				
 				for(int w = 0; w < world.walls.size(); w++){ //for each wall in level
 					if( world.walls.get(w).testIntersection(xRay, yRay, wallMargin) ){
-						wallTextureIndex = world.walls.get(w).getTextureColumn(xRay, yRay);
-						foundWall = true;
+						wallTexture = world.walls.get(w).texture;
+						wallTextureSegment = world.walls.get(w).getTextureColumn(xRay, yRay);
+						foundWall = true; 
 						break;
 					}
 				}
@@ -246,24 +245,39 @@ public class Game extends Canvas implements Runnable{
 			
 			if(foundWall){
 				draw3dList.add(new sprite3d(ray, steps*rayStep, dude.heading, true, 
-						eagle.segment[wallTextureIndex]));
+						wallTextures[wallTexture].segment[wallTextureSegment]));
 			}
 			
 		}
 		
+		draw3dList.add(new sprite3d(400-dude.x,400-dude.y,dude.heading,false,shootsprite));
+		draw3dList.add(new sprite3d(200-dude.x,450-dude.y,dude.heading,false,logo));
+		
+		for(int i=0; i<lasers.size(); i++){
+			if( lasers.get(i) != null ){
+				draw3dList.add(new sprite3d(lasers.get(i).x-dude.x,lasers.get(i).y-dude.y,dude.heading,false,lasersprite));
+			}
+		}	
+		
+		Collections.sort(draw3dList , new distComparator() );
+		
 		for(int i=0; i < draw3dList.size(); i++){
+			
+			double screenX = draw3dList.get(i).screenX;
+			int drawWidth = draw3dList.get(i).drawWidth;
+			
+			if(screenX >= 0 - drawWidth && screenX < WIDTH + drawWidth && draw3dList.get(i).drawHeight < HEIGHT * 3)
 			r.drawImage(draw3dList.get(i).sprite,
 					(int)(draw3dList.get(i).screenX - (draw3dList.get(i).drawWidth/2)) ,
 					(int)((Game.HEIGHT - draw3dList.get(i).drawHeight) /2 ) ,
-					draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight, null );
-			
-			/*r.fillRect((int)(draw3dList.get(i).screenX - (draw3dList.get(i).drawWidth/2)) ,
-					(int)((Game.HEIGHT - draw3dList.get(i).drawHeight) /2 ) ,
-					draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight);*/
-			
+					draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight, null );						
 		}
 		
 		draw3dList.clear();
+		
+		//r.drawImage(crosshair, WIDTH/2 - 12, HEIGHT/2 - 12, 24, 24, null);
+		r.setColor(Color.WHITE);
+		r.drawString("[Z]fire      [C]strafe      [Space]use            [Arrows]move",8, HEIGHT - 8);
 		
 		Graphics g = bs.getDrawGraphics();
 		

@@ -14,15 +14,17 @@ public class level {
 	
 	private void buildLevel( int levelNum ){
 		
-		width = 500; height = 500;
+		width = 800; height = 800;
 		walls.add(new wall(0,0,width,0,  0));
 		walls.add(new wall(0,0,0,height,  0));
 		walls.add(new wall(width,0,width,height,  0));
 		walls.add(new wall(0,height,width,height,  0));
 		
-		walls.add(new wall(50,50,50,75,0));
-		walls.add(new wall(50,50,75,50,0));
-		walls.add(new wall(75,50,50,75,0));
+		walls.add(new wall(50,50,50,75,1));
+		walls.add(new wall(50,50,75,50,1));
+		walls.add(new wall(75,50,50,75,1));
+		
+		walls.add(new wall(250,800,250,600,2));
 
 		
 	}

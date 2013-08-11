@@ -8,11 +8,12 @@ import javax.imageio.ImageIO;
 
 public class wallTexture {
 	
-	private BufferedImage fullTexture;
 	public Image segment[] = new Image [64];
 	public int texDex;
 	
 	public wallTexture(String path){
+		
+		BufferedImage fullTexture = null;
 		
 		try {
 			fullTexture = ImageIO.read(SpriteSheet.class.getResource(path));

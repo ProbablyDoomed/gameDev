@@ -1,6 +1,5 @@
 package gameDev.graphics;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -9,10 +8,10 @@ import javax.imageio.ImageIO;
 public class SpriteSheet {
 	
 	public String path;
-	public int width;
-	public int height;
+	public int width,width_t;
+	public int height,height_t;
 	public int tileSize;
-	public BufferedImage sheetImage; 
+	public BufferedImage[][] sprite; 
 	
 	public SpriteSheet(String path, int tileSize){
 		BufferedImage image = null;
@@ -29,17 +28,23 @@ public class SpriteSheet {
 		}
 		
 		this.path = path;
-		this.width = image.getWidth();
-		this.height = image.getHeight();
 		this.tileSize = tileSize;
-		this.sheetImage = image;
+		
+		this.width = image.getWidth();
+		this.width_t = width / tileSize;
+		this.height = image.getHeight();
+		this.height_t = height/ tileSize;
+
+		//this.sheetImage = image;
+		sprite = new BufferedImage[width_t][height_t];
+		
+		for (int x=0; x < width_t; x++){
+			for (int y=0; y < height_t; y++){
+				sprite[x][y] = image.getSubimage(x * tileSize, y * tileSize, tileSize, tileSize);
+			}
+		}
 		
 	}
-	
-	public Image getSprite( int xTile, int yTile , boolean flipX, boolean flipY){
-		Image sprite = sheetImage.getSubimage(xTile * tileSize, yTile * tileSize, tileSize, tileSize);
-		//if (flipX) sprite.scale(-1,-1); 
-		return sprite;
-	}
+
 
 }

@@ -28,12 +28,12 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		
 	}
 	
-	public double[] getIntersection(double x, double y, double angle){
+	/*public double[] getIntersection(double x, double y, double angle){
 		
 		double result[] = new double[2];
 		
 		return result;
-	}
+	}*/
 	
 	public boolean testIntersection(double x, double y, double margin){
 		
