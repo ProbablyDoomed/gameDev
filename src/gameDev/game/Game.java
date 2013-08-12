@@ -40,7 +40,7 @@ public class Game extends Canvas implements Runnable{
 	public List<sprite3d> draw3dList = new ArrayList<sprite3d>();
 	public static final double rayStep = 1;
 	public static final int maxDrawDist = 2000;
-	public static final double wallMargin = 1;
+	public static final double wallMargin = rayStep;
 	
 	
 	public inputHandler input;
@@ -50,7 +50,8 @@ public class Game extends Canvas implements Runnable{
 	public wallTexture[] wallTextures = {
 			new wallTexture("/wolfen/redbrick.png"),
 			new wallTexture("/wolfen/greystone.png"),
-			new wallTexture("/wolfen/wood.png")
+			new wallTexture("/wolfen/wood.png"),
+			new wallTexture("/whitebrick.png")
 	};
 
 	public List<projectile> lasers = new ArrayList<projectile>();
@@ -187,6 +188,14 @@ public class Game extends Canvas implements Runnable{
 			shooting = false;
 		}
 		
+		for(int w = 0; w < world.walls.size(); w++){
+			world.walls.get(w).tickMovement();
+			if(input.use.isPressed()){
+				world.walls.get(w).toggle();
+			}
+		}
+		input.use.toggle(false);
+		
 		for(int i=0; i<lasers.size(); i++){
 			if( lasers.get(i) != null ){
 				lasers.get(i).tickMovement();
@@ -266,11 +275,15 @@ public class Game extends Canvas implements Runnable{
 			double screenX = draw3dList.get(i).screenX;
 			int drawWidth = draw3dList.get(i).drawWidth;
 			
-			if(screenX >= 0 - drawWidth && screenX < WIDTH + drawWidth && draw3dList.get(i).drawHeight < HEIGHT * 3)
-			r.drawImage(draw3dList.get(i).sprite,
-					(int)(draw3dList.get(i).screenX - (draw3dList.get(i).drawWidth/2)) ,
-					(int)((Game.HEIGHT - draw3dList.get(i).drawHeight) /2 ) ,
-					draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight, null );						
+			if(screenX >= 0 - drawWidth && screenX < WIDTH + drawWidth){
+				if(draw3dList.get(i).isWall || draw3dList.get(i).drawHeight < HEIGHT * 3){
+					r.drawImage(draw3dList.get(i).sprite,
+							(int)(draw3dList.get(i).screenX - (draw3dList.get(i).drawWidth/2)) ,
+							(int)((Game.HEIGHT - draw3dList.get(i).drawHeight) /2 ) ,
+							draw3dList.get(i).drawWidth, draw3dList.get(i).drawHeight, null );
+				}
+			}
+									
 		}
 		
 		draw3dList.clear();

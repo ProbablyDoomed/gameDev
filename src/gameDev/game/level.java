@@ -24,7 +24,9 @@ public class level {
 		walls.add(new wall(50,50,75,50,1));
 		walls.add(new wall(75,50,50,75,1));
 		
-		walls.add(new wall(250,800,250,600,2));
+		walls.add(new hingedoor(250,799,250,750,Math.PI/2,2));
+		
+		walls.add(new wall(800,600,600,800,3));
 
 		
 	}

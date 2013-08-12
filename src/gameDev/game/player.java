@@ -13,7 +13,7 @@ public class player {
 	public double heading;
 	public static final double turnRate = 0.03;
 	
-	public double collideRadius = 40;
+	public double collideRadius = 20;
 	
 	public player(int startX, int startY, double startFacing){
 		this.x = startX; 

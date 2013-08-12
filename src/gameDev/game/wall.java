@@ -15,6 +15,13 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		this.x2 = x2;
 		this.y2 = y2;
 		
+		setOrientation();
+		
+		this.texture = texture;
+		
+	}
+	
+	public void setOrientation() {
 		if(x1==x2){
 			this.vertical = true;
 		}
@@ -22,12 +29,9 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 			this.m = (y2-y1)/(x2-x1);
 			this.c = y1 - (m*x1);
 			this.vertical = false;
-		}
-		
-		this.texture = texture;
-		
+		}	
 	}
-	
+
 	/*public double[] getIntersection(double x, double y, double angle){
 		
 		double result[] = new double[2];
@@ -100,6 +104,15 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		
 		int dist = (int)(Math.sqrt((xDiff*xDiff)+(yDiff*yDiff)));				
 		return (dist % 64);
+	}
+	
+	public void toggle(){
+		
+	}
+
+	public void tickMovement() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

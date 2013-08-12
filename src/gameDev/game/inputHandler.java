@@ -45,6 +45,7 @@ public class inputHandler implements KeyListener, MouseListener, MouseMotionList
 	public Key right = new Key();
 	public Key fire = new Key();
 	public Key strafe = new Key();
+	public Key use = new Key();
 	
 	public void keyPressed(KeyEvent e) {
 		toggleKey(e.getKeyCode(), true);
@@ -66,6 +67,7 @@ public class inputHandler implements KeyListener, MouseListener, MouseMotionList
 		if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) right.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_C ) strafe.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_Z ) fire.toggle(isPressed);
+		if (keyCode == KeyEvent.VK_SPACE ) use.toggle(isPressed);
 	}
 
 
