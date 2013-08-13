@@ -25,7 +25,7 @@ public class Game extends Canvas implements Runnable{
 
 	public static final int WIDTH = 320;
 	public static final int HEIGHT = WIDTH / 16 * 10;
-	public static final int SCALE = 4;
+	public static final int SCALE = 1;
 	
 	public static final double FOV = 25*Math.PI/180;
 	
@@ -51,7 +51,8 @@ public class Game extends Canvas implements Runnable{
 			new wallTexture("/wolfen/redbrick.png"),
 			new wallTexture("/wolfen/greystone.png"),
 			new wallTexture("/wolfen/wood.png"),
-			new wallTexture("/whitebrick.png")
+			new wallTexture("/whitebrick.png"),
+			new wallTexture("/wooddoor.png")
 	};
 
 	public List<projectile> lasers = new ArrayList<projectile>();
