@@ -23,11 +23,11 @@ public class Game extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 320;
+	public static final int WIDTH = 480;
 	public static final int HEIGHT = WIDTH / 16 * 10;
-	public static final int SCALE = 2;
+	public static final int SCALE = 3;
 	
-	public static final double FOV = 30*Math.PI/180;
+	public static final double FOV = 25*Math.PI/180;
 	
 	public static final String NAME = "Test Game";
 	
@@ -226,58 +226,31 @@ public class Game extends Canvas implements Runnable{
 		
 		for(int ray = 0; ray < WIDTH; ray++){
 			
-			int steps = 0;
 			int wallTexture = 0;
 			int wallTextureSegment = 0;
 			boolean foundwall = false;
-			double xRay,yRay;
 			
-			double angle = dude.heading - Game.FOV + (ray * 2 * Game.FOV/Game.WIDTH);
-			double xStep = rayStep * Math.cos(angle);
-			double yStep = rayStep * Math.sin(angle);
-			
-			/*while( steps*rayStep <= maxDrawDist && foundwall == false){
+			double angle = dude.heading - Game.FOV + (ray * 2 * Game.FOV/Game.WIDTH);	
 				
-				steps++;
-				xRay = dude.x + xStep * steps;
-				yRay = dude.y + yStep * steps;
-				
-				for(int w = 0; w < world.walls.size(); w++){ //for each wall in level
-					if( world.walls.get(w).testIntersection(xRay, yRay, wallMargin) ){
-						
-						foundwall = true;
-					
-						wallTexture = world.walls.get(w).texture;
-						wallTextureSegment = world.walls.get(w).getTextureColumn(xRay, yRay);
-						
-						draw3dList.add(new sprite3d(ray, steps*rayStep, dude.heading, true, 
-						wallTextures[wallTexture].segment[wallTextureSegment]));
-						
-						break;
-						
-					}
-				}
-				
-			}*/
-			
-			
-			
-			double m2 = yStep/xStep;//Math.tan(angle); //y = m*x + c for ray 
+			double m2 = Math.tan(angle); //y = m*x + c for ray 
 			double c2 = dude.y - (m2*dude.x);
 			double intersect[] = new double[2];
+			
 			double lowdist = maxDrawDist;
+			double xWall = 0,yWall = 0;
 			int closestwall = -1;
 			
 			for(int w = 0; w < world.walls.size(); w++){ //for each wall in level
 				
 				intersect = world.walls.get(w).getIntersectPoint(m2,c2);
 				
-				double anglediff = angle - dude.heading;
+				double anglediff = Math.atan((intersect[1]-dude.y)/(intersect[0]-dude.x)) - dude.heading;
 				
-				//if (anglediff >= Math.PI) angle -= 2*Math.PI;
-				//if (anglediff <= -Math.PI) angle += 2*Math.PI;
+				if(intersect[0] < dude.x) anglediff += (Math.PI);
+				if (anglediff >= Math.PI) anglediff -= 2*Math.PI;
+				if (anglediff <= -Math.PI) anglediff += 2*Math.PI;
 				
-				if(anglediff > -Math.PI && anglediff < Math.PI){
+				if(anglediff > -Math.PI/2 && anglediff < Math.PI/2){
 					if( world.walls.get(w).testIntersection(intersect[0], intersect[1], wallMargin) ){
 						
 						foundwall = true;
@@ -288,6 +261,8 @@ public class Game extends Canvas implements Runnable{
 						if(dist < lowdist) {
 							lowdist = dist;
 							closestwall = w;
+							xWall = intersect[0];
+							yWall = intersect[1];
 						}
 						
 						//break;
@@ -300,21 +275,15 @@ public class Game extends Canvas implements Runnable{
 			
 			if(foundwall){
 				wallTexture = world.walls.get(closestwall).texture;
-				wallTextureSegment = world.walls.get(closestwall).getTextureColumn(intersect[0], intersect[1]);
+				wallTextureSegment = world.walls.get(closestwall).getTextureColumn(xWall, yWall);
 				
 				draw3dList.add(new sprite3d(ray, lowdist, dude.heading, true, 
 							wallTextures[wallTexture].segment[wallTextureSegment]));
 			}
 		}
 		
-		/*draw3dList.add(new sprite3d(400-dude.x,400-dude.y,dude.heading,false,shootsprite));
-		draw3dList.add(new sprite3d(200-dude.x,450-dude.y,dude.heading,false,logo));*/
-		
-		draw3dList.add(new sprite3d(1-dude.x,1-dude.y,dude.heading,false,lasersprite));
-		draw3dList.add(new sprite3d(1-dude.x,799-dude.y,dude.heading,false,lasersprite));
-		draw3dList.add(new sprite3d(799-dude.x,1-dude.y,dude.heading,false,lasersprite));
-		draw3dList.add(new sprite3d(799-dude.x,799-dude.y,dude.heading,false,lasersprite));
-		
+		draw3dList.add(new sprite3d(400-dude.x,400-dude.y,dude.heading,false,shootsprite));
+		draw3dList.add(new sprite3d(200-dude.x,450-dude.y,dude.heading,false,logo));		
 		
 		for(int i=0; i<lasers.size(); i++){
 			if( lasers.get(i) != null ){

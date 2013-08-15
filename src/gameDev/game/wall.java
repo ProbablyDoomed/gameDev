@@ -36,8 +36,6 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		
 		double result[] = new double[2];
 		
-		//double m2 = Math.atan(angle); //y = m*x + c for ray 
-		//double c2 = y - (m2*x);
 		if(vertical){
 			result[0] = x1;
 		}

@@ -14,13 +14,13 @@ public class level {
 	
 	private void buildLevel( int levelNum ){
 		
-		width = 800; height = 800;
+		width = 1600; height = 800;
 		walls.add(new wall(0,0,width,0,  0));
 		walls.add(new wall(0,0,0,height,  1));
 		walls.add(new wall(width,0,width,height,  2));
 		walls.add(new wall(0,height,width,height,  3));
 		
-		/*walls.add(new wall(800,0,800,400-32,0));
+		walls.add(new wall(800,0,800,400-32,0));
 		walls.add(new hingedoor(801,400-32,801,400,-Math.PI*0.8,  4));
 		walls.add(new hingedoor(801,400+32,801,400,Math.PI*0.8,  4));
 		walls.add(new wall(800,800,800,400+32,0));
@@ -31,7 +31,7 @@ public class level {
 		
 		//walls.add(new slidedoor(1200,400,1200,800,400,  2));
 		
-		walls.add(new wall(800,700,700,800,3));*/
+		walls.add(new wall(800,700,700,800,3));
 
 		
 	}
