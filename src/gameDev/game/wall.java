@@ -32,12 +32,23 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		}	
 	}
 
-	/*public double[] getIntersection(double x, double y, double angle){
+	public double[] getIntersectPoint(double m2, double c2/*, double angle*/){
 		
 		double result[] = new double[2];
 		
+		//double m2 = Math.atan(angle); //y = m*x + c for ray 
+		//double c2 = y - (m2*x);
+		if(vertical){
+			result[0] = x1;
+		}
+		else{
+			result[0] = (c - c2)/(m2 - m); //x
+		}
+		result[1] = (m2 * result[0]) + c2;
+		
+		
 		return result;
-	}*/
+	}
 	
 	public boolean testIntersection(double x, double y, double margin){
 		
