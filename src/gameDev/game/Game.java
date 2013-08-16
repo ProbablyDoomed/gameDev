@@ -25,7 +25,7 @@ public class Game extends Canvas implements Runnable{
 
 	public static final int WIDTH = 640;
 	public static final int HEIGHT = WIDTH / 16 * 10;
-	public static final int SCALE = 2;
+	public static final int SCALE = 1;
 	
 	public static final double FOV = 25*Math.PI/180;
 	
@@ -58,7 +58,7 @@ public class Game extends Canvas implements Runnable{
 	public List<projectile> lasers = new ArrayList<projectile>();
 	
 	
-	Image lasersprite,crosshair,shootsprite,logo;
+	Image gunsprite,lasersprite,crosshair,shootsprite,logo;
 	boolean shooting = false;
 	
 	
@@ -89,12 +89,14 @@ public class Game extends Canvas implements Runnable{
 			
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
 		SpriteSheet logoSheet = new SpriteSheet("/drinksplusplus.png",64);
+		SpriteSheet gunsheet = new SpriteSheet("/nerfgun128-1.png",128);
 		input = new inputHandler(this);
 		dude = new player(250,250,0);
 		lasersprite = playerSprites.sprite[2][1];
 		crosshair = playerSprites.sprite[0][1];
 		shootsprite = playerSprites.sprite[1][0];
 		logo = logoSheet.sprite[0][0];
+		gunsprite = gunsheet.sprite[0][0];
 	}
 	
 	private synchronized void start() {
@@ -178,7 +180,7 @@ public class Game extends Canvas implements Runnable{
 		dude.tickMovement( world );
 		dude.applyFriction();
 		//lasers.trimToSize();
-		if(input.fire.isPressed() && lasers.size() < 32){
+		if(input.fire.isPressed() && lasers.size() < 8){
 						
 			shooting = true;
 			
@@ -311,7 +313,7 @@ public class Game extends Canvas implements Runnable{
 		
 		draw3dList.clear();
 		
-		//r.drawImage(crosshair, WIDTH/2 - 12, HEIGHT/2 - 12, 24, 24, null);
+		r.drawImage(gunsprite, WIDTH/2 - 128, HEIGHT - 180, 256, 256, null);
 		r.setColor(Color.WHITE);
 		r.drawString("[Z]fire      [C]strafe      [Space]use            [Arrows]move",8, HEIGHT - 8);
 		
