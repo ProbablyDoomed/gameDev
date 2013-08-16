@@ -23,9 +23,9 @@ public class Game extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 480;
+	public static final int WIDTH = 640;
 	public static final int HEIGHT = WIDTH / 16 * 10;
-	public static final int SCALE = 3;
+	public static final int SCALE = 2;
 	
 	public static final double FOV = 25*Math.PI/180;
 	
@@ -91,7 +91,7 @@ public class Game extends Canvas implements Runnable{
 		SpriteSheet logoSheet = new SpriteSheet("/drinksplusplus.png",64);
 		input = new inputHandler(this);
 		dude = new player(250,250,0);
-		lasersprite = playerSprites.sprite[1][1];
+		lasersprite = playerSprites.sprite[2][1];
 		crosshair = playerSprites.sprite[0][1];
 		shootsprite = playerSprites.sprite[1][0];
 		logo = logoSheet.sprite[0][0];
@@ -178,7 +178,7 @@ public class Game extends Canvas implements Runnable{
 		dude.tickMovement( world );
 		dude.applyFriction();
 		//lasers.trimToSize();
-		if(input.fire.isPressed() && lasers.size() < 4){
+		if(input.fire.isPressed() && lasers.size() < 32){
 						
 			shooting = true;
 			

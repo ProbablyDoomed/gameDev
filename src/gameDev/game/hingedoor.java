@@ -4,7 +4,7 @@ public class hingedoor extends wall{ //wall that can rotate about (x1,y1) betwee
 	
 	public boolean state = false; //opening/closing
 	public int position = 0;
-	public static final int rotateFrames = 8;
+	public static final int rotateFrames = 16;
 	
 	public double[] x2Frames = new double[rotateFrames];
 	public double[] y2Frames = new double[rotateFrames];

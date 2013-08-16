@@ -6,7 +6,7 @@ public class player {
 	public double x,y;
 	public double xVel=0 , yVel=0;
 	public static final double xVelLimit = 0.5, yVelLimit = xVelLimit;
-	public static final int moveRes = 1;
+	public static final int moveRes = 20;
 	public static final double acceleration = 5;
 	public static final double friction = 0.3;
 	
