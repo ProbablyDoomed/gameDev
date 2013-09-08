@@ -11,6 +11,7 @@ import java.util.List;
 public class inputHandler implements KeyListener, MouseListener, MouseMotionListener{
 	
 	public int mX=0,mY=0;
+	public int mdX=0, mdY=0;
 	
 	public inputHandler(Game game){
 		game.addKeyListener(this);
@@ -46,6 +47,8 @@ public class inputHandler implements KeyListener, MouseListener, MouseMotionList
 	public Key fire = new Key();
 	public Key strafe = new Key();
 	public Key use = new Key();
+	public Key strafeleft = new Key();
+	public Key straferight = new Key();
 	
 	public void keyPressed(KeyEvent e) {
 		toggleKey(e.getKeyCode(), true);
@@ -63,11 +66,13 @@ public class inputHandler implements KeyListener, MouseListener, MouseMotionList
 	public void toggleKey(int keyCode, boolean isPressed){
 		if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) up.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) down.toggle(isPressed);
-		if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) left.toggle(isPressed);
-		if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) right.toggle(isPressed);
+		if (keyCode == KeyEvent.VK_LEFT) left.toggle(isPressed);
+		if (keyCode == KeyEvent.VK_RIGHT) right.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_C ) strafe.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_Z ) fire.toggle(isPressed);
 		if (keyCode == KeyEvent.VK_SPACE ) use.toggle(isPressed);
+		if (keyCode == KeyEvent.VK_A ) strafeleft.toggle(isPressed);
+		if (keyCode == KeyEvent.VK_D ) straferight.toggle(isPressed);
 	}
 
 
@@ -89,17 +94,19 @@ public class inputHandler implements KeyListener, MouseListener, MouseMotionList
 
 	public void mousePressed(MouseEvent e) {
 		updateMouseXY(e);
-		//fire.toggle(true);
+		if(Game.mouselook) fire.toggle(true);
 	}
 
 	public void mouseReleased(MouseEvent e) {
 		updateMouseXY(e);
-		//fire.toggle(false);
+		if(Game.mouselook) fire.toggle(false);
 	}
 	
 	private void updateMouseXY(MouseEvent e) {
-		mX = e.getX()/Game.SCALE;
-		mY = e.getY()/Game.SCALE;
+		mdX = e.getX() - mX;
+		mdY = e.getY() - mY;
+		mX += mdX;
+		mY += mdY;
 	}
 
 

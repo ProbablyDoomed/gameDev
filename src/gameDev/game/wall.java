@@ -111,7 +111,7 @@ public class wall { //wall from (x1,y1) to (x2,y2)
 		double xDiff = x - x1;
 		double yDiff = y - y1;
 		
-		int dist = (int)(Math.sqrt((xDiff*xDiff)+(yDiff*yDiff)));				
+		int dist = (int)(Math.sqrt((xDiff*xDiff)+(yDiff*yDiff)));
 		return (dist % 64);
 	}
 	

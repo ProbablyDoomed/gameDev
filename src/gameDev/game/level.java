@@ -29,7 +29,10 @@ public class level {
 		walls.add(new wall(50,50,75,50,1));
 		walls.add(new wall(75,50,50,75,1));
 		
-		//walls.add(new slidedoor(1200,400,1200,800,400,  2));
+		walls.add(new wall(1200,0,1200,400-32,1));
+		walls.add(new wall(1200,400+32,1200,800,1));
+		
+		walls.add(new slidedoor(1200,400-32,1200,400+32,64,  1));
 		
 		walls.add(new wall(799,700,700,800,3));
 

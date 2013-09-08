@@ -23,11 +23,11 @@ public class Game extends Canvas implements Runnable{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int WIDTH = 640;
+	public static final int WIDTH = 480;
 	public static final int HEIGHT = WIDTH / 16 * 10;
 	public static final int SCALE = 1;
 	
-	public static final double FOV = 25*Math.PI/180;
+	public static final double FOV = 20*Math.PI/180;
 	
 	public static final String NAME = "Test Game";
 	
@@ -35,12 +35,17 @@ public class Game extends Canvas implements Runnable{
 	
 	public boolean running = false;
 	public int tickCount = 0;
+	public int tps = 0, fps = 0;
+	public static boolean trippinballs = false;
+	public static final boolean mouselook = false;
 	
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	public List<sprite3d> draw3dList = new ArrayList<sprite3d>();
 	public static final double rayStep = 1;
 	public static final int maxDrawDist = 2000;
 	public static final double wallMargin = rayStep;
+
+
 	
 	
 	public inputHandler input;
@@ -58,7 +63,7 @@ public class Game extends Canvas implements Runnable{
 	public List<projectile> lasers = new ArrayList<projectile>();
 	
 	
-	Image gunsprite,lasersprite,crosshair,shootsprite,logo;
+	Image gunsprite_idle,gunsprite_shoot,lasersprite,fireball,shootsprite,logo;
 	boolean shooting = false;
 	
 	
@@ -89,14 +94,15 @@ public class Game extends Canvas implements Runnable{
 			
 		SpriteSheet playerSprites = new SpriteSheet("/spriteArturas.png",32);
 		SpriteSheet logoSheet = new SpriteSheet("/drinksplusplus.png",64);
-		SpriteSheet gunsheet = new SpriteSheet("/nerfgun128-1.png",128);
+		SpriteSheet gunsheet = new SpriteSheet("/nerfgun_2frame_test.png",128);
 		input = new inputHandler(this);
 		dude = new player(250,250,0);
 		lasersprite = playerSprites.sprite[2][1];
-		crosshair = playerSprites.sprite[0][1];
+		fireball = playerSprites.sprite[1][1];
 		shootsprite = playerSprites.sprite[1][0];
 		logo = logoSheet.sprite[0][0];
-		gunsprite = gunsheet.sprite[0][0];
+		gunsprite_idle = gunsheet.sprite[0][0];
+		gunsprite_shoot = gunsheet.sprite[1][0];
 	}
 	
 	private synchronized void start() {
@@ -151,8 +157,10 @@ public class Game extends Canvas implements Runnable{
 			
 			if ((System.currentTimeMillis() - lastTimer) >= 1000){
 				lastTimer += 1000;
-				System.out.println("FramesPerSec: "+frames+"     TicksPerSec: "+ticks);
+				//System.out.println("FramesPerSec: "+frames+"     TicksPerSec: "+ticks);
 				//System.out.println(""+);
+				fps = frames;
+				tps = ticks;
 				frames = 0;
 				ticks= 0;
 			}
@@ -175,16 +183,28 @@ public class Game extends Canvas implements Runnable{
 			if(input.left.isPressed()) dude.turn(-1);
 			if(input.right.isPressed()) dude.turn(1);
 		}
+		
+		if(input.strafeleft.isPressed()) dude.accel(dude.heading - Math.PI/2);
+		else if(input.straferight.isPressed()) dude.accel(dude.heading + Math.PI/2);
+		
+		if(mouselook){
+			dude.turn((double)input.mdX / 4);
+			input.mdX = 0;
+		}
+
 
 		
 		dude.tickMovement( world );
 		dude.applyFriction();
 		//lasers.trimToSize();
-		if(input.fire.isPressed() && lasers.size() < 8){
-						
-			shooting = true;
+		if(input.fire.isPressed()){ 			
 			
-			lasers.add(new projectile(dude.x,dude.y, dude.heading , 16 ,lasersprite));
+			if(lasers.size() < 16){
+				shooting = true;
+				lasers.add(new projectile(dude.x,dude.y, 
+						dude.heading + (-0.005 + Math.random()*0.01) , 16 + Math.random()*8 ,lasersprite));
+			}
+			else shooting = false;
 			
 		}
 		else{
@@ -202,10 +222,22 @@ public class Game extends Canvas implements Runnable{
 		for(int i=0; i<lasers.size(); i++){
 			if( lasers.get(i) != null ){
 				lasers.get(i).tickMovement();
+					
 				if (lasers.get(i).x < 0 || lasers.get(i).y < 0 
 					||  lasers.get(i).x >= world.width || lasers.get(i).y >= world.height){
 					lasers.remove(i);
 				}
+				else{
+					for(int w = 0; w < world.walls.size(); w++){
+						if( world.walls.get(w).testIntersection(lasers.get(i).x, lasers.get(i).y, lasers.get(i).speed) ){
+							//draw3dList.add(new sprite3d(lasers.get(i).x-dude.x,lasers.get(i).y-dude.y,dude.heading,false,fireball));
+							lasers.remove(i);
+							break;
+						}
+					}
+				}
+				
+				
 			}
 		}
 		
@@ -312,10 +344,17 @@ public class Game extends Canvas implements Runnable{
 		}
 		
 		draw3dList.clear();
-		
-		r.drawImage(gunsprite, WIDTH/2 - 128, HEIGHT - 180, 256, 256, null);
+		Image gunsprite = null;
+		if(shooting){
+			gunsprite = gunsprite_shoot;
+		}
+		else{
+			gunsprite = gunsprite_idle;
+		}
+		r.drawImage(gunsprite, WIDTH/2 - WIDTH/6, HEIGHT - WIDTH/4, WIDTH/3, WIDTH/3, null);
 		r.setColor(Color.WHITE);
-		r.drawString("[Z]fire      [C]strafe      [Space]use            [Arrows]move",8, HEIGHT - 8);
+		//r.drawString("[Z]fire      [C]strafe      [Space]use            [Arrows]move",8, HEIGHT - 8);
+		r.drawString("Framerate:"+fps+"   Tickrate:"+tps,8, HEIGHT - 8);
 		
 		Graphics g = bs.getDrawGraphics();
 		

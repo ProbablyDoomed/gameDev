@@ -7,6 +7,7 @@ public class projectile {
 	public double x,y;
 	public double xVel, yVel;
 	public double colideRadius = 10;
+	public double speed;
 	boolean hitscan; //instantly hitting bullet
 
 	public Image sprite;
@@ -14,6 +15,7 @@ public class projectile {
 	public projectile(double x , double y, double dir, double speed, Image sprite){
 		this.x = x;
 		this.y = y;
+		this.speed = speed;
 		this.sprite = sprite;
 		
 		this.xVel = (double)(speed * Math.cos(dir));
